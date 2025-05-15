@@ -1,8 +1,12 @@
 #include <stdio.h>
-#include <stdbool.h> // give acess to C99 "key" words such as bool, true, false (which are wrappers by the nature) 
+#include <stdbool.h> // give acess to C99 "key" words such as bool, true, false (which are wrappers by the nature)
+#include <ctype.h>
 
 // directive declaration
-#define INCHES_PER_POUND 166 
+#define INCHES_PER_POUND 166
+
+// type definition
+typedef int Bool;
 
 // function declaration
 void one(); 
@@ -14,6 +18,9 @@ void six();
 void seven();
 void eight();
 void nine();
+void twelve();
+void thirteen();
+void fourteen();
 
 int main () {
     // one();
@@ -21,6 +28,9 @@ int main () {
     // three();
     // four();
     // five();
+    // twelve();
+    // thirteen();
+    fourteen();
 
 
     return 0;
@@ -149,8 +159,8 @@ void nine() {
     // %d conversion works only for int type
     unsigned int unsignedInt;
     printf("%u", unsignedInt); // %u specifies decimal representation of the number
-    printf("%o", unsignedInt); // %u specifies octal representation of the number
-    printf("%x", unsignedInt); // %u specifies hexadecimal representation of the number
+    printf("%o", unsignedInt); // %o specifies octal representation of the number
+    printf("%x", unsignedInt); // %x specifies hexadecimal representation of the number
 
 
     short shortInteger;
@@ -193,4 +203,111 @@ void ten() {
     double doublePrecision = 570.e-1;
     printf("%e", doublePrecision); // %e, %f, %g converters are used for reading and writhing single and double precision floating point numbers
     scanf("%lf", &doublePrecision); // but for scanf() the l sign is required for double (and L (upper case) for long double)
+}
+
+void eleven() {
+    char one = 'a';
+    char two = 'B';
+
+    unsigned char three = '3';
+
+    char ch;
+    int i ;
+
+    i = 'a'; // i is now 97 
+    ch = 65; // ch is now 'A'
+    ch = ch + 1; // ch is now 'B'
+    ch++; // ch is now 'C'
+
+    if ('a' <= ch && ch <= 'z') { // converts a character to upper case
+        ch = ch - 'a' + 'A';
+    }
+
+    for (char i = 'A'; i <= 'Z'; i++) { // loops through all upper case letters
+
+    }
+
+    char upperChar = toupper('a');
+
+    char four;
+    scanf("%c", &four);
+    printf(" %c", four); // skips whitespaces before the character
+
+    do { // allows to read all character before next line character sigh
+        scanf("%c", &ch);
+    } while (ch != '\n');
+
+    putchar(four); // writes a single char, alternative fo printf()
+    int five = getchar(); // reads a character and stores in in four, alternative for scanf()
+
+    while (getchar() != '\n'); // common C construction
+}
+
+void twelve() {
+    int one = -123;
+    unsigned two = 113u;
+
+    int three = one + two;
+    printf("The values are: %d and %d, comparison is: %d, sum is: %d\n", one, two, one < two, three);
+
+
+    char c;
+    short int s;
+    int i;
+    unsigned int u;
+    long int l;
+    unsigned long int ul;
+    float f;
+    double d;
+    long double ld;
+
+    i = i + c ; /* c is converted to int */
+    i = i + s; /* s is converted to int */
+    u = u + i ; /* i is converted to unsigned int */
+    l = l + u; /* u is converted to long int */
+    ul = ul + l; /* l is converted to unsigned long int */
+    f = f + ul; /* ul is converted to float */
+    d = d + f; /* f is converted to double */
+    ld = ld + d; /* d is converted to long double */
+}
+
+void thirteen() {
+    printf("Size of short: in %zu\n\n", sizeof(short)); // z convertor is used to print sizeof value (unsigned long)
+
+    printf("Size of char: %lu bit\n", sizeof(char) * 8u);
+
+    printf("Size of short: %lu bit\n", sizeof(short) * 8u);
+    printf("Size of int: %lu bit\n", sizeof(int) * 8u);
+    printf("Size of long: %lu bit\n", sizeof(long) * 8u);
+    printf("Size of long long: %lu bit\n", sizeof(long long) * 8u);
+
+    printf("Size of float: %lu bit\n", sizeof(float) * 8u);
+    printf("Size of double: %lu bit\n", sizeof(double) * 8u);
+    printf("Size of long double: %lu bit\n", sizeof(long double) * 8u);
+}
+
+void fourteen() {
+    int array[10]; // a declaration of an array of integers with length 10 
+    array[0] = 1;
+    printf("%d\n", array[3]);
+
+    int array1[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; // declaration and initialization
+    int array2[10] = {0}; // initialization of an array of zeros
+
+    int array2[] = {0, 1, 2}; // if an initialization is present, the length specification might be omitted
+    
+    int array3[15] = {[9] = 7, [2] = 29, [14] = 48}; // designated initialization allows to specify values for particular cells
+
+    int array4[] = {[5] = 10, [23] = 13, [11] = 36, [15] = 29}; // this designation forces the array to have 24 cells
+
+    int array5[10] = {5, 1, 9, [4] = 3, 7, 2, [8] = 6}; // also allowed way of initializing
+
+    int array6[5][9] = { {1, 1, 1, 1, 1, 0, 1, 1, 1}, // an initialization of a multidimensional array, inner braces could be omitted
+                    {0, 1, 0, 1, 0, 1, 0, 1, 0},
+                    {0, 1, 0, 1, 1, 0, 0, 1, 0}};
+
+    double array7 [2] [2] = { [0] [0] = 1.0, [1] [1] = 1.0};
+
+    const int array8[] = {0, 1, 2}; // an array that can't be modified in runtime
+
 }
