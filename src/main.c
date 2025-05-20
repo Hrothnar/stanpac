@@ -4,6 +4,7 @@
 
 // directive declaration
 #define INCHES_PER_POUND 166
+#define LEN 10
 
 // type definition
 typedef int Bool;
@@ -21,8 +22,9 @@ void nine();
 void twelve();
 void thirteen();
 void fourteen();
+void sixteen(), seventeen();
 
-int main () {
+int main() {
     // one();
     // two();
     // three();
@@ -34,6 +36,13 @@ int main () {
 
 
     return 0;
+}
+
+void zero() {
+    /*
+        in C (C99) the 'return' statement can't be used in a non-void function without a subsequent expression
+        I suppose this statement 'return;' does have an expression, which is void, since a function is not a void this becomes illegal
+    */
 }
 
 void one() {
@@ -309,5 +318,83 @@ void fourteen() {
     double array7 [2] [2] = { [0] [0] = 1.0, [1] [1] = 1.0};
 
     const int array8[] = {0, 1, 2}; // an array that can't be modified in runtime
+}
 
+// if a parameter is a multidimensional array, only the length of the first dimension may be omitted when the parameter is declared
+int sumTwoDimensionalArray(int array[][LEN], int n) {
+    int i, j, sum = 0;
+    for (i = 0; i < n; i++)
+        for (j = 0; j < LEN; j++)
+            sum += array[i] [j];
+    return sum;
+}
+/* 
+    With the use of a variable-length array (VLA), the exact length of an array could be passed as an argument.
+    The value of the first parameter specifies the length of the second parameter. The order here is importand since most left argument initialises first
+*/
+void fifteen(int n, int array[n]) {
+    // there are several ways to writhe the prototype for function that has VLA as one of parameters
+    int sumArray(int n, int array[n]);
+    
+    // marks the second parameter as optional, in case where the name of the first parameter is omitted it wouldn't be specify that the length of the array in n
+    // an asterisk fives a clue to the compiler that the length of an array is related to the parameter that comes earlier in the list
+    int sumArray(int, int array[*]); 
+
+    // it is also legal to leave the braces empty
+    // leaving braces empty isn't a good choice, because it doesn't expose the relationship between n and array
+    int sumArray(int, int array[]);
+    int sumArray(int, int []);
+
+    // in general the length of VLA can be any expression
+
+    int concatenateArrays(int n, int m, int array1[n], int array2[m], int array3[n + m]) {
+
+    }
+
+    // VLA are also very useful while working with multidimensional arrays
+    int sum_two_dimensional array(int n, int m, int a[n][m]) {
+        int i, j, sum = 0;
+            for (i = 0; i < n; i++)
+                for (j = 0; j < m; j++)
+                    sum += a [i] [j ] ;
+        return sum;
+    }
+    
+    // Prototypes for this function include the following:
+    int sum_two_dimensional_array(int n, int m, int a[n] [m]);
+    int sum_two_dimensional_array(int n, int m, int a[*][*]);
+    int sum_two_dimensional_array(int n, int m, int a[][m]);
+    int sum_two_dimensional_array(int n, int m, int a[][*]);
+}
+
+void sixteen() {
+    /*
+        C99 allows to use the keyword 'static' in the declaration of an array parameter
+        Using static in this way has no effect on the behavior of the program. The presence of static is merely a “hint” that may allow a C compiler to generate faster
+        instructions for accessing the array. (If the compiler knows that an array will
+        always have a certain minimum length, it can arrange to “prefetch” these elements
+        from memory when the function is called, before the elements are actually needed
+        by statements within the function.)
+        One last note about static: If an array parameter has more than one dimension, static can be used only in the first dimension (for example, when specifying the number of rows in a two-dimensional array).
+    */
+    int sumArray(int array[static 3], int n) { // guaranties the length of an array at least 3
+
+    }
+}
+
+void seventeen() {
+    // in C89 array, that is intend to be used as an argument of a calling function must be initialized firs, like so
+    int array[] = {3, 0, 2, 1};
+    int total = sumArray(array, 4);
+
+    // in C99 an anonymous array can be created 'on the fly', this technique is also known as compound literals
+    // A compound literal resembles a cast applied to an initializer. In fact, compound literals and initializers obey the same rules
+    int total = sumArray((int []) {3, 0, 2, 1}, 5); // also, we can specify the length of an array explicitly
+
+    int i = 2;
+    float j = 3.3f;
+    double k = 5.2;
+
+    int total = sumArray((int []) {2 * i, i + j, j * k}, 3);
+    int total = sumArray((const int []) {2 * i, i + j, j * k}, 3); // an array could be constant
 }
