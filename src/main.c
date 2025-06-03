@@ -22,7 +22,7 @@ void nine();
 void twelve();
 void thirteen();
 void fourteen();
-void sixteen(), seventeen();
+void sixteen(), seventeen(), eighteen(), nineteen();
 
 int main() {
     // one();
@@ -32,7 +32,8 @@ int main() {
     // five();
     // twelve();
     // thirteen();
-    fourteen();
+    // fourteen();
+    nineteen();
 
 
     return 0;
@@ -42,6 +43,7 @@ void zero() {
     /*
         in C (C99) the 'return' statement can't be used in a non-void function without a subsequent expression
         I suppose this statement 'return;' does have an expression, which is void, since a function is not a void this becomes illegal
+        the address of the first byte is said to be the address of the variables
     */
 }
 
@@ -303,21 +305,21 @@ void fourteen() {
     int array1[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; // declaration and initialization
     int array2[10] = {0}; // initialization of an array of zeros
 
-    int array2[] = {0, 1, 2}; // if an initialization is present, the length specification might be omitted
+    int array3[] = {0, 1, 2}; // if an initialization is present, the length specification might be omitted
     
-    int array3[15] = {[9] = 7, [2] = 29, [14] = 48}; // designated initialization allows to specify values for particular cells
+    int array4[15] = {[9] = 7, [2] = 29, [14] = 48}; // designated initialization allows to specify values for particular cells
 
-    int array4[] = {[5] = 10, [23] = 13, [11] = 36, [15] = 29}; // this designation forces the array to have 24 cells
+    int array5[] = {[5] = 10, [23] = 13, [11] = 36, [15] = 29}; // this designation forces the array to have 24 cells
 
-    int array5[10] = {5, 1, 9, [4] = 3, 7, 2, [8] = 6}; // also allowed way of initializing
+    int array6[10] = {5, 1, 9, [4] = 3, 7, 2, [8] = 6}; // also allowed way of initializing
 
-    int array6[5][9] = { {1, 1, 1, 1, 1, 0, 1, 1, 1}, // an initialization of a multidimensional array, inner braces could be omitted
+    int array7[5][9] = { {1, 1, 1, 1, 1, 0, 1, 1, 1}, // an initialization of a multidimensional array, inner braces could be omitted
                     {0, 1, 0, 1, 0, 1, 0, 1, 0},
                     {0, 1, 0, 1, 1, 0, 0, 1, 0}};
 
-    double array7 [2] [2] = { [0] [0] = 1.0, [1] [1] = 1.0};
+    double array8 [2] [2] = { [0] [0] = 1.0, [1] [1] = 1.0};
 
-    const int array8[] = {0, 1, 2}; // an array that can't be modified in runtime
+    const int array9[] = {0, 1, 2}; // an array that can't be modified in runtime
 }
 
 // if a parameter is a multidimensional array, only the length of the first dimension may be omitted when the parameter is declared
@@ -347,24 +349,24 @@ void fifteen(int n, int array[n]) {
 
     // in general the length of VLA can be any expression
 
-    int concatenateArrays(int n, int m, int array1[n], int array2[m], int array3[n + m]) {
+    // int concatenateArrays(int n, int m, int array1[n], int array2[m], int array3[n + m]) {
 
-    }
-
-    // VLA are also very useful while working with multidimensional arrays
-    int sum_two_dimensional array(int n, int m, int a[n][m]) {
-        int i, j, sum = 0;
-            for (i = 0; i < n; i++)
-                for (j = 0; j < m; j++)
-                    sum += a [i] [j ] ;
-        return sum;
-    }
+    // }
     
     // Prototypes for this function include the following:
     int sum_two_dimensional_array(int n, int m, int a[n] [m]);
     int sum_two_dimensional_array(int n, int m, int a[*][*]);
     int sum_two_dimensional_array(int n, int m, int a[][m]);
     int sum_two_dimensional_array(int n, int m, int a[][*]);
+}
+
+// VLA are also very useful while working with multidimensional arrays
+int sum_two_dimensional_array(int n, int m, int a[n][m]) {
+    int i, j, sum = 0;
+        for (i = 0; i < n; i++)
+            for (j = 0; j < m; j++)
+                sum += a [i] [j ] ;
+    return sum;
 }
 
 void sixteen() {
@@ -377,24 +379,112 @@ void sixteen() {
         by statements within the function.)
         One last note about static: If an array parameter has more than one dimension, static can be used only in the first dimension (for example, when specifying the number of rows in a two-dimensional array).
     */
-    int sumArray(int array[static 3], int n) { // guaranties the length of an array at least 3
+    // int sumArray(int array[static 3], int n) { // guaranties the length of an array at least 3
 
+    // }
+}
+
+int sumArray(int n, int array[]) {
+    int sum = 0;
+    for (int i = 0; i < n; i++) {
+        sum += array[i];
     }
+    return sum;
+}
+
+int sumArray2(int array[static 3], int n) { // guaranties the length of an array at least 3
+    int sum = 0;
+    for (int i = 0; i < n; i++) {
+        sum += array[i];
+    }
+    return sum;
 }
 
 void seventeen() {
     // in C89 array, that is intend to be used as an argument of a calling function must be initialized firs, like so
     int array[] = {3, 0, 2, 1};
-    int total = sumArray(array, 4);
+    int total = sumArray2(array, 4);
 
     // in C99 an anonymous array can be created 'on the fly', this technique is also known as compound literals
     // A compound literal resembles a cast applied to an initializer. In fact, compound literals and initializers obey the same rules
-    int total = sumArray((int []) {3, 0, 2, 1}, 5); // also, we can specify the length of an array explicitly
+    int total2 = sumArray2((int []) {3, 0, 2, 1}, 5); // also, we can specify the length of an array explicitly
 
     int i = 2;
     float j = 3.3f;
     double k = 5.2;
 
-    int total = sumArray((int []) {2 * i, i + j, j * k}, 3);
-    int total = sumArray((const int []) {2 * i, i + j, j * k}, 3); // an array could be constant
+    int total3 = sumArray2((int []) {2 * i, i + j, j * k}, 3);
+    int total4 = sumArray2((const int []) {2 * i, i + j, j * k}, 3); // an array could be constant
+}
+
+void eighteen() {
+    /*
+        putting 'static' in the declaration of a local variable causes it to have 'static storage duration'
+        it means that the value will remain its value throughout the whole lifecycle of the program
+        but, it is sill a local variable which is visible only inside the function
+        other calls of this function could address this variable
+    */
+   static float pi = 3.14f;
+   
+   // static local variables in recursion share the same static variable, instead of creating new ones
+}
+
+void nineteen() {
+    /*
+        pointers are variables that store the addresses of objects
+        pointers or (pointer variables) must be preceded by * like so: 
+        int *p; - this declaration states that a pointer p is capable of pointing to an object of type int
+        C requires that pointers point only to a particular reference type. Moreover, they can point to another pointers
+    */
+
+    // pointers can appear in declarations along with other variables
+    int v1, v2, a1[10], a2[20],*p1, *p2;
+
+    /*
+        C provides a pair of operators designed specifically for use with pointers
+            & operator is used to find the address of a variable
+            * operator (indirection operator) gives access to the object that a pointer points to,
+            if p is a pointer, then *p represents the object to which p currently points
+    */
+
+    int *p3; // allocate space by declaring a pointer variable, now it points nowhere, but in general is it crucial to initialise a pointer
+
+    /* here are the ways how pointer can be initialised */
+    int v3, *p4;
+    p4 = &v3; // assigns the address of v3 to the pointer p4, now p4 pointes to v3 (in other words, p4 contains the address of v3)
+
+    int v4;
+    int *p5 = &v4; // it's possible to initialize a pointer variable at the time t is declared
+
+    int v5, *p6 = &v5; // it might look event like so
+
+    /* once a pointer variable points to an object, the * operator can be used to access the value it points to */
+    printf("%d\n", *p6); // this will display the value! of v5 (now is't undefined)
+    
+    v4 = *&v5; // equals v4 = v5; (showcase of the pointer operators)
+
+    /* 
+        as long as p6 points to v5, *p6 is an alias fo v5
+        Not only does *p6 have the same value as v5, but changing the value of *p6 also changes the value of v5 (*p6 is an l-value, so assignment to it is legal)
+    */
+
+    int v6, *p7;
+    p7 = &v6;
+    v6 = 1;
+
+    printf("%d\n", v6);  // prints 1
+    printf("%d\n", *p7); // prints 1
+
+    *p7 = 2;
+
+    printf("%d\n", v6);  // prints 2
+    printf("%d\n", *p7); // prints 2
+
+    /* as being said the * operator must not be applied to an uninitialized pointer variable - the behavior will be undefined */
+    int *p8;
+    printf("%d\n", *p8); // wrong, p8 holds nothing (getting this: Segmentation fault (core dumped) "$outputExe")
+
+    /* assigning a value to *p8 is particularly dangerous. if p8 happens to contain a valid memory address, the following assignment will attempt to modify the data stored at that address */
+    *p8 = 1; // dangerous, should be avoided
+
 }
