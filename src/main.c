@@ -9,7 +9,7 @@
 // type definition
 typedef int Bool;
 
-// function declaration
+// function declaration (or function prototype)
 void one();
 void two();
 void three();
@@ -489,9 +489,9 @@ void nineteen()
     p4 = &v3; // assigns the address of v3 to the pointer p4, now p4 pointes to v3 (in other words, p4 contains the address of v3)
 
     int v4;
-    int *p5 = &v4; // it's possible to initialize a pointer variable at the time t is declared
+    int *p5 = &v4; // it's possible to initialize a pointer variable at the time it is declared
 
-    int v5, *p6 = &v5; // it even might look like so
+    int v5, *p6 = &v5; // it might even look like so
 
     /* once a pointer variable points to an object, the * operator can be used to access the value it points to */
     printf("%d\n", *p6); // this will display the value! of v5 (now is't undefined)
@@ -507,13 +507,13 @@ void nineteen()
     p7 = &v6;
     v6 = 1;
 
-    printf("%d\n", v6);  // prints 1
-    printf("%d\n", *p7); // prints 1
+    printf("%d | I should print 11\n", v6); // prints 1
+    printf("%d | I should print 1\n", *p7); // prints 1
 
     *p7 = 2;
 
-    printf("%d\n", v6);  // prints 2
-    printf("%d\n", *p7); // prints 2
+    printf("%d | I should print 2\n", v6);  // prints 2
+    printf("%d | I should print 2\n", *p7); // prints 2
 
     /* as being said the * operator must not be applied to an uninitialized pointer variable - the behavior will be undefined */
     int *p8;
@@ -534,7 +534,7 @@ void nineteen()
     *p9 = 1;
     *p10 = 2;
 
-    printf("%d\n", *p10); // prints 2
+    printf("%d | I should print 2\n", *p9); // prints 2
 
     /* not confuse ! */
     p9 = p10;   // pointer assignment
@@ -549,10 +549,20 @@ void nineteen()
     /* pointers as arguments */
     decomposeV2(3.14159, &v7, &v8);
 
-    /* pointers are return types */
-    int *p11, v9, v10;
+    /*
+    In most cases if a function accepts a pointer as one of its parameters, presumably the argument will be changed by the function.
+    Nevertheless there is the case when it is not needed. It this situation, the key word 'const' could be placed before argument type to prevent its change, event if it's a pointer.
+        void f(const int *p)
+        {
+            *p = 0; // WRONG
+        }
+    */
 
-    p11 = max(v9, v10);
+    /* pointers as return types */
+    int *p11, v9 = 9, v10 = 10;
+
+    p11 = max(&v9, &v10);
+    printf("%d | I should print 10\n", *p11); // prints 10
 }
 
 void decomposeV2(double x, long *intPart, double *fracPart)
@@ -563,8 +573,8 @@ void decomposeV2(double x, long *intPart, double *fracPart)
 
 /**
  * Returns a pointer to whichever integer is larger
- * Although the function returns one of the pointers passed to it as an argument, 
- * that's not the only possibility. A function could also return a pointer to an external variable or to a local variable that's been declared static
+ * Although the function returns one of the pointers passed to it as an argument, that's not the only possibility. 
+ * A function could also return a pointer to an external variable or to a local variable that's been declared static.
  */
 int *max(int *x, int *y)
 {
