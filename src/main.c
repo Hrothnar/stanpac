@@ -5,6 +5,8 @@
 // directive declaration
 #define INCHES_PER_POUND 166
 #define LEN 10
+#define STR_LEN 80
+#define SENT_LEN 160
 
 // type definition
 typedef int Bool;
@@ -22,10 +24,15 @@ void nine();
 void twelve();
 void thirteen();
 void fourteen();
-void sixteen(), seventeen(), eighteen(), nineteen();
+void sixteen(), seventeen(), eighteen(), nineteen(), twenty(), twentyOne(), twentyTwo();
 
 void decomposeV2(double, long *, double *);
 int *max(int *, int *);
+int sumArrayPointerLoop();
+void twoDimensionArrayLoop();
+char convertToHexChar(int);
+int readLine(char[], int);
+void f1(int), f2(int, int);
 
 int main()
 {
@@ -37,7 +44,10 @@ int main()
     // twelve();
     // thirteen();
     // fourteen();
-    nineteen();
+    // nineteen();
+    // twenty();
+    // twentyOne();
+    twentyTwo();
 
     return 0;
 }
@@ -573,7 +583,7 @@ void decomposeV2(double x, long *intPart, double *fracPart)
 
 /**
  * Returns a pointer to whichever integer is larger
- * Although the function returns one of the pointers passed to it as an argument, that's not the only possibility. 
+ * Although the function returns one of the pointers passed to it as an argument, that's not the only possibility.
  * A function could also return a pointer to an external variable or to a local variable that's been declared static.
  */
 int *max(int *x, int *y)
@@ -583,4 +593,323 @@ int *max(int *x, int *y)
         return x;
     }
     return y;
+}
+
+void twenty()
+{
+    /* pointers and arrays */
+    /**
+     * C supports three forms of pointer arithmetic:
+     *   adding an integer to a pointer,
+     *   substracting an integer from a pointer,
+     *   substracting on pointer from another
+     */
+
+    int a1[10], *p1, *p2, v1, v2;
+
+    /**
+     * Adding an integer j to a pointer p yields a pointer to the element j places after the on that p points to.
+     * More  precisely, if p points to the array element a[i], then p + j points to a[i+j].
+     * When one pointer is subtracted from another, the result is the distance (measured in array elements) between the pointers.
+     * Thus, if p points to a[i] and q points to a[j], then p - q is equal to i - j.
+     */
+
+    // subtracting an integer from a pointer
+    p1 = &a1[8];
+    p2 = p1 - 3;
+    p1 -= 6;
+
+    // subtraction one pointer from another
+    p1 = &a1[5];
+    p2 = &a1[1];
+
+    v1 = p1 - p2; // v1 is 4
+    v1 = p2 - p1; // v1 is -4
+
+    /**
+     * Performing arithmetic on a pointer that doesn't point to an array element causes undefined behavior.
+     * Furthermore, the effect of subtraction on pointer from another is undefined unless both point to elements fo the same array.
+     */
+
+    /**
+     * Pointers also could be compared using known relation and equality operators.
+     * The outcome of the comparison depends on the relative positions of the two elements in the array.
+     */
+
+    // Pointer to compound literals
+    int *p3 = (int[]){3, 0, 3, 4, 1};
+
+    /**
+     * p3 points to the first element of a five-element array.
+     * Using a compound literal saves the trouble of first declaring an array variable and then making p3 point to the first element of that array
+     */
+
+    int sum = sumArrayPointerLoop();
+    printf("The sum of the array is %d\n", sum); // the sum is 308
+
+    /** combining the * and ++ operators */
+    // Here's the simple case of storing a value into an array element and then advancing to the next element.
+
+    a1[v1++] = v2; // using array subscripting
+    *p1++ = v2;    // if p1 points to an array element
+
+    /**
+     * Expression               Meaning
+     * *p++ or * (p++)          Value of expression is *p before increment; increment p later
+     * (*p)++                   Value of expression is *p before increment; increment *p later
+     * *++p or * (++p)          Increment p first; value of expression is *p after increment
+     * ++*p or ++ (*p)          Increment *p first; value of expression is *p after increment
+     */
+
+    /* using an array name as a pointer */
+    int a2[10];
+    *a2 = 7;        // a2 as a pointer to the first element in the array
+    *(a2 + 1) = 12; // stores 12 in a[1] element
+
+    /**
+     * In general, a + i is the same as &a[i] and *(a + i) is equivalent to a[i]/
+     * The fact that an array name can serve as a pointer makes it easier to write loops that step through an array, like so:
+     * for (p = a; p < a + n; p++) {
+     *     sum += *p;
+     * }
+     */
+    /**
+     * Although an array name can be used as a pointer, it's not possible to assign it a new value.
+     *   a++ // wrong
+     * but, there's a workaround:
+     *   p = a;
+     *   p++;
+     */
+    /**
+     * C allows to subscript a pointer as though it were an array name:
+     * int n = 10, a[n], i, sum = 0, *p = a;
+     * for (i = 0; i < n; i++) {
+     *      sum += p[i];
+     * }
+     */
+
+    /* processing the elements of a multidimensional array */
+    // to be filled up
+    twoDimensionArrayLoop();
+
+    /* pointers and variable-length arrays */
+    /**
+     * Pointes are allowed to point to elements of variable-length arrays (VLAs).
+     */
+    f1(11);
+    /**
+     * When VLA has more than one dimension, the type of the pointer depends on the length of each dimension except of the first.
+     */
+    f2(5, 7);
+}
+
+/**
+ * We could just as easily have written the loop without pointers, of course, using subscripting instead.
+ * The argument most often cited in support of pointer arithmetic is that it can save execution time.
+ * However, that depends on the implementation - some C compilers actually produce better code for loops that rely on subscripting.
+ */
+int sumArrayPointerLoop()
+{
+    int a[] = {11, 22, 33, 44, 55, 66, 77}, n = 7, sum = 0, *p;
+
+    for (p = &a[0]; p < &a[n]; p++)
+    {
+        sum += *p;
+    }
+
+    return sum;
+}
+
+void twoDimensionArrayLoop()
+{
+    int *p, rows = 6, columns = 8, a[rows][columns];
+
+    for (p = &a[0][0]; p <= &a[rows - 1][columns - 1]; p++)
+    {
+        *p = 0;
+    }
+}
+
+void f1(int n)
+{
+    int a[n], *p;
+    p = a;
+    // logic
+}
+
+void f2(int n, int m)
+{
+    /**
+     * Since the ttype of p depends on n, which isn't constant, p is said to have a variably modified type.
+     * The validity of an assignment such as p = a can't always be determined by the compiler.
+     *
+     */
+    int a[m][n], (*p)[n];
+    p = a;
+    // logic
+}
+
+void twentyOne()
+{
+    /* strings*/
+    /**
+     * A sting literal is a sequence of characters enclosed withing double quotes: "sting literal"*.
+     * String literals may contain the same escape sequences as charater constants.
+     * Using octal and hexadecimal escape sequences in string literals should be conscious, it has some caveats.
+     */
+
+    printf("When you come to a fork in the road, take it.\
+            -- Yogi Berra"); // '\' allows to split a sring an continue on another line
+
+    /* There's another way to move a part of a sting to another line */
+
+    printf("When you come to a fork in the road, take it. "
+           "-- Yogi Berra"); // allows to split a sring with the help of the whitespace and continue on another line
+
+    /**
+     * In essence, C treats sting literals as character arrays. When a C compiler encounters a string literal of length n in a program,
+     * it sets aside n + 1 bytes of memory for the string. This area of memory will contain the characters in the string, plus on extra character
+     * - the null character - to mark the end of the string. The null character is a byte whose bits are all zero, so it's represented by the \0 escape sequence.
+     */
+
+    "abc"; // is stored as an array [a, b, c, \0];
+    "";    // is stored as an array [\0];
+
+    /**
+     * Since a sting literal is stored as an array, the compiler treats it as a pointer of type char *.
+     * Both printf and scanf, for example, expect a value of type char * as their first argument.
+     */
+
+    /* operations on stirng literals */
+    char *p1;
+    p1 = "abc"; // doesn't copy the characters in "abc"; it merely makes p1 point to the first character of the string.
+
+    // C allows pointers ot be subscripted
+    char ch1;
+    ch1 = "abc"[1];
+
+    const asHex = convertToHexChar(4);
+
+    // attempting to modify a string literal causes undefined behavior:
+    char *p2 = "abc";
+    *p2 = 'd'; // wrongs
+
+    /* one must now use a character where char pointer expected */
+}
+
+char convertToHexChar(int digit)
+{
+    // the showcase of a string subscription
+    return "0123456789ABCDEF"[digit];
+}
+
+void twentyTwo()
+{
+    /* string variables */
+    /**
+     * In C despite other language there's no dedicated 'string' type, instead it allows every array of characters to be 'string'
+     * Due to this fact, a programmer should be careful when declaring such, every array of character that is aimed to serve as a string
+     * must be proceeded with a null terminator at the end, as the last cell of the array.
+     */
+
+    char string[STR_LEN + 1]; // declaring a string, allocating memory + one termination character
+
+    /**
+     * Declaring a character array to have length STR_LEN + 1 doesn't mean that is will always contain a string of STR_LEN characters.
+     * The length of a string depends on the position of the termination null character, not on the length of the array in which the string is stored.
+     */
+
+    /**
+     * The compiler will put the characters from "June 14" in the date1 array, then add a null character so that date1 can be used as a string.
+     * Although "June 14" appears to be a sring literal, it's not. Instead, C views it a an abbreviation for an array initializer.
+     */
+    char date1[8] = "June 14";                                 // declaring of a sring variable = [J, u, n, e, , 1, 4, \0];
+    char date2[8] = {'J', 'u', 'n', 'e', ' ', '1', '4', '\0'}; // equals to the row above
+    // if an initializer is too short the sring variable then remaining cells will be filled with null terminator character
+
+    char date3[7] = "June 14"; // legal, but, there's no room for \0, so I can't be used as a
+
+    char date4[] = "June 14"; // omitting the length on declaration
+
+    /* Character Arrays versus Character Pointers */
+    /**
+     * There are significant differences between these declarations.
+     * In the array version the characters stored in date4 can be modifies, lke the elements of any array.
+     * In the pointer version, date5 pointes to a string literal, and sring literals shouldn't be modified.
+     *
+     * In the array version date4 is an array name. In the pointer version, date5 is a variable that can be made to point to other strings
+     * during program execution.
+     */
+    char date5[] = "June 14";
+    char *date6 = "June 14";
+
+    char *p1; // declaring a pointer isn't enough if modified char array is needed
+
+    // now it points to an array of characters
+    char string2[STR_LEN + 1], *p2;
+    p2 = string2;
+
+    /* Reading and Writing Strings */
+    char str[] = "Are we having fun yet?";
+    printf("%s\n", str);   // Are we having fun yet?
+    printf("%.6s\n", str); // Are we
+
+    /**
+     * A string, like a number, can be printed withing a field. The %ms conversion will display a sting in a field of size m.
+     * A string could be right - m or left - -m adjusted
+     */
+
+    puts(str); // writes the string and additional new-line character
+
+    /* Reading Srings Using scanf and gets */
+    /**
+     * The %s conversion specification allow scanf to read a string into a character array
+     * There's no need to put the & operator in front of str in the call of scanf,
+     * like any array name, str is treated as a pointer when passed to a function
+     */
+
+    // scanf("%s", str); // a sting read using scanf will never contain white space
+
+    /**
+     * As alternative there's a function = gets() tat does not skip white space before starting to read the string.
+     * It reads until it finds a new-line character (scanf stops at any white-space character). Incidentally, gets() discards the new-line character
+     * instead of storing it in the array, the null character takes its place.
+     */
+
+    char sentence[SENT_LEN + 1];
+
+    printf("Enter a sentence (scanf()):\n"); // "To C, or not to C: that is the question."
+    scanf("%s", sentence);                   // "To"
+
+    printf("The stored string (scanf()): ");
+    puts(sentence);
+
+    printf("Enter a sentence (gets()):\n"); // "To C, or not to C: that is the question."
+    gets(sentence);                         // " To C, or not to C: that is the question."
+
+    printf("The stored string (gets()): ");
+    puts(sentence);
+
+    // scanf("%4s", sentence); // 4 - indicates the length of a sring that will be read
+
+    // readLine(sentence, 15);
+}
+
+/**
+ * Since scanf() and gets() are not particularly convenient, programmers tend to write their own string reading functions.
+ * This one as an example of a such function.
+ */
+int readLine(char str[], int n)
+{
+    int ch, i = 0;
+
+    while ((ch = getchar()) != '\n')
+    {
+        if (i < n)
+        {
+            str[i++] = ch;
+        }
+        str[i] = '\0';
+        return i;
+    }
 }
