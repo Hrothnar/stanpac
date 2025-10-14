@@ -24,7 +24,7 @@ void nine();
 void twelve();
 void thirteen();
 void fourteen();
-void sixteen(), seventeen(), eighteen(), nineteen(), twenty(), twentyOne(), twentyTwo();
+void sixteen(), seventeen(), eighteen(), nineteen(), twenty(), twentyOne(), twentyTwo(), twentyThree();
 
 void decomposeV2(double, long *, double *);
 int *max(int *, int *);
@@ -912,4 +912,99 @@ int readLine(char str[], int n)
         str[i] = '\0';
         return i;
     }
+}
+
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+#define IS_EVEN(n) ((n) % 2 == 0)
+#define PRINT_INT(n) printf(#n " = %d\n", n)
+#define ADD(x, y) (x + y)
+#define TEST(condition, ...) ((condition) ? \
+    printf("Passed test: %s\n", #condition) : \
+    printf(__VA_ARGS__))
+
+void twentyThree()
+{
+    /** the preprocessor */
+
+    /**
+     * Most preprocessing directives fall into one of three categories:
+     * Macro definition:
+     *  The #define directive defines a macro; the #undef directive removes a macro definition
+     * File inclusion:
+     *  The #include directive causes the contents of a pecified file to be include in a program.
+     * Conditional compilation:
+     *  The #if, #ifdef, #ifndef, #elif, #else and #endif directives allow blocks of text to be either
+     *  included in or excluded from a program, depending on conditions that can be tested by the preprocessor.
+     *
+     * There are also #error, #line and #pragma directives, they are more specialized and therefore used less often.
+     * Directives could be continues on next line if the previous ended with \ symbol.
+     */
+
+    /**
+     * Simple macros:           #define identifier replacement-list
+     * Parameterized macro:     #define identifier(x1, x2, ..., x3) replacement-list
+     */
+
+    int j, k, m, n, i = MAX(j + k, m - n); // -> ((j + k) > (m - n) ? (j + k) : (m - n))
+    if (IS_EVEN(i))                        // -> ((i) % 2 == 0)
+        i++;
+
+    /**
+     * Macro definitions may contain two special operators, # and ##.
+     * Neither operator is recognized by the compiler; instead, they're executed during preprocessing.
+     * The # operator converts a macro argument into a string literal; is can appear only in the
+     * replacement list of a parameterized macro.
+     * The ## operator is rarely used.
+     */
+
+    PRINT_INT(k / m); // -> printf("k / m" " = %d\n", k / m)
+
+    /**
+     * Creating longer macros is now a simple task, considering how preprocessor replaces them.
+     * But this syntax in general allow to create such macros, but unfortunately, it cannot be used in every situation:
+     *          #define ECHO(s) (gets(s), puts(s)) // an example of a complex macros
+     */
+
+    /** predefined macros */
+
+    /**
+     * __LINE__ Line number of file being compiled
+     * __FILE__ Name of file being compiled
+     * __DATE__ Date of compilation(in the form "Mmm dd yyyy")
+     * __TIME__ Time of compilation (in the form "hh:mm: ss")
+     * __STDC__ 1 if the compiler conforms to the C standard (C89 or C99)
+     *
+     * C99
+     * __STDC__ HOSTED__ 1 if this is a hosted implementation; 0 if it is freestanding
+     * __STDC__ VERSION__ Version of C standard supported
+     * __STDC_IEC_559__ 1 ifIEC 60559 floating-point arithmetic is supported
+     * __STDC IEC 559 COMPLEX__ 1 if EC 60559 complex arithmetic is supported
+     * __STDC_ISO_10646__ yyyymmL if wchar_t values match the ISO 10646 standard of the specified year and month
+     */
+
+    /** empty macro arguments C99 */
+
+    /**
+     * C99 allows any or all of the arguments in a macro call to be empty.
+     * Such a call ill contain the same number of commas as a normal call, however.
+     * In most cases, the effect of an empty argument is clear. Wherever the corresponding parameter name
+     * appears in the replacement list, it's replaced by nothing - it simply disappears from the replacement list.
+     */
+
+    i = ADD(j, k); // -> (j + k)
+    i = ADD(, k);  // > ( + k)
+
+    /**
+     * When an empty argument is an operand of the # or ## operators, special rules apply.
+     * If an empty argument is "stringized" by the # operator, the result is "" (the empty string).
+     */
+
+    /** macros with a variable number of arguments C99 */
+
+    int voltage, maxVoltage;
+    TEST(voltage <= maxVoltage, "Voltage %d exceeds %d\n", voltage, maxVoltage);
+
+    /** 
+     * There's also __func__ identifier that stores the name of the currently executing function
+     */
 }
