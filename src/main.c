@@ -12,19 +12,9 @@
 typedef int Bool;
 
 // function declaration (or function prototype)
-void one();
-void two();
-void three();
-void four();
-void five();
-void six();
-void seven();
-void eight();
-void nine();
-void twelve();
-void thirteen();
-void fourteen();
-void sixteen(), seventeen(), eighteen(), nineteen(), twenty(), twentyOne(), twentyTwo(), twentyThree();
+void one(), two(), three(), four(), five(), six(), seven(), eight(), nine();
+void twelve(), thirteen(), fourteen(), sixteen(), seventeen(), eighteen(), nineteen();
+void twenty(), twentyOne(), twentyTwo(), twentyThree(), twentyFour(), twentyFive(), twentySix();
 
 void decomposeV2(double, long *, double *);
 int *max(int *, int *);
@@ -33,6 +23,16 @@ void twoDimensionArrayLoop();
 char convertToHexChar(int);
 int readLine(char[], int);
 void f1(int), f2(int, int);
+
+struct part
+{
+    int number;
+    char name[25];
+    int onHand;
+}; // the semicolon must follow a struct declaration
+
+void printPart(part);
+struct part buildPart(int, const char *, int);
 
 int main()
 {
@@ -47,7 +47,11 @@ int main()
     // nineteen();
     // twenty();
     // twentyOne();
-    twentyTwo();
+    // twentyTwo();
+    // twentyThree();
+    // twentyFour();
+    // twentyFive();
+    twentySix();
 
     return 0;
 }
@@ -918,9 +922,7 @@ int readLine(char str[], int n)
 #define IS_EVEN(n) ((n) % 2 == 0)
 #define PRINT_INT(n) printf(#n " = %d\n", n)
 #define ADD(x, y) (x + y)
-#define TEST(condition, ...) ((condition) ? \
-    printf("Passed test: %s\n", #condition) : \
-    printf(__VA_ARGS__))
+#define TEST(condition, ...) ((condition) ? printf("Passed test: %s\n", #condition) : printf(__VA_ARGS__))
 
 void twentyThree()
 {
@@ -1004,7 +1006,254 @@ void twentyThree()
     int voltage, maxVoltage;
     TEST(voltage <= maxVoltage, "Voltage %d exceeds %d\n", voltage, maxVoltage);
 
-    /** 
+    /**
      * There's also __func__ identifier that stores the name of the currently executing function
      */
+}
+
+void twentyFour()
+{
+    /* structs */
+
+    struct
+    {
+        int number;
+        char name[25];
+        int onHand;
+    } one, two;
+
+    struct
+    {
+        int number;
+        char name[25];
+        int onHand;
+    } three = {322, "Potato", 11},
+      four = {153, "Strawberry", 87},
+      five = {.onHand = 32, .number = 482, .name = "Toy car"};
+
+    printf("One number: %d\n", one.number);
+    printf("Two name: %s\n", two.name);
+
+    one.number = 444;
+    two.onHand++;
+
+    one = two; // copies all members from one struct to another
+
+    /* declaring a structure tag */
+
+    /**
+     * A structure tag is a name used to identify a particular kind of structure.
+     * All structures declared to have type struct part are compatible with one another.
+     * The following example declares a structure tag named part:
+     */
+
+    // struct part
+    // {
+    //     int number;
+    //     char name[25];
+    //     int onHand;
+    // }; // the semicolon must follow a struct declaration
+
+    struct part six, seven; // the word "struct" shall remain in a variable declaration
+
+    /* defining a structure type */
+
+    /**
+     * Aa an alternative to declaring a structure tag, typedef can be used.
+     */
+
+    typedef struct
+    {
+        int number;
+        char nome[25];
+        int onHand;
+    } Part;
+
+    Part eight, nine; // the word "struct" isn't needed
+
+    /* structures as arguments and return values */
+
+    printPart(six);
+    struct part ten = buildPart(23, "Orange", 3);
+
+    /* compound literals */
+
+    printPart((struct part){528, "Disk drive", 10});
+
+    /* nested structures */
+
+    struct personName
+    {
+        char first[25];
+        char middleInitial;
+        char last[25];
+    };
+
+    struct student
+    {
+        struct personName name;
+        int id, age;
+        char sex;
+    } student1, student2;
+
+    strcpy(student1.name.first, "Fred");
+
+    struct personName newName;
+    student1.name = newName;
+
+    /* arrays of structures */
+
+    struct part inventory[100];
+
+    printPart(inventory[2]);
+
+    inventory[3].number = 883;
+
+    inventory[4].name[0] = '\0'; // changes the name to an empty string
+
+    /* initializing an array of structures */
+
+    struct dialingCode
+    {
+        char *country;
+        int code;
+    };
+
+    // inner braces around each stucture value are optional
+    const struct dialingCode countryCodes[] = {
+        {"Argentina", 54},
+        {"Brazil", 55},
+        {"China", 86}};
+
+    /**
+     * C99 introduced designated initializers that allow an item to have more than one designator.
+     */
+    struct part inventory2[100] = {[0].number = 332, [0].onHand = 77, [0].name[0] = '\0'};
+}
+
+void printPart(struct part p)
+{
+    printf("Part number: %d\n", p.number);
+    printf("Part name: %s\n", p.name);
+    printf("Quantity on hand: %d\n", p.onHand);
+}
+
+struct part buildPart(int number, const char *name, int onHand)
+{
+    struct part p;
+
+    p.number = number;
+    strcpy(p.name, name);
+    p.onHand = onHand;
+    return p;
+}
+
+void twentyFive()
+{
+    /* unions */
+
+    /**
+     * Structs are unions differ in only one way: the members of a struct are stored at different addresses in memory,
+     * while the members of a union are stored at the same address.
+     */
+    union
+    {
+        int i;
+        double d;
+    } u1;
+
+    u1.i = 82;
+    u1.d = 74.7;
+
+    /**
+     * Since the compiler overlays storage for the members of a union,
+     * changing one member alters any value previously stored in any of the other members.
+     * Unions mirror almost every property and action that can be done on a struct,
+     * except that only one member can be initialized in designated initialization (and only the first with the simple initialization)
+     */
+
+    union
+    {
+        int i;
+        double d;
+    } u2 = {5};
+
+    union
+    {
+        int i;
+        double d;
+    } u3 = {.d = 23.05};
+
+    struct catalogItem
+    {
+        int stockNumber;
+        double price;
+        int itemType;
+        union
+        {
+            struct
+            {
+                char title[25];
+                char author[25];
+                int numPages;
+            } book;
+            struct
+            {
+                char design[25];
+            } mug;
+            struct
+            {
+                char design[25];
+                int colors;
+                int sizes;
+            } shirt;
+        } item;
+    };
+
+    /**
+     * There's one downsize in unions, it's impossible to know which member has value ans which not,
+     * or in other words, which value has been modified last.
+     * To overcome this problem a struct containing the special flag could be of help.
+     * This struct, in addition to a union will contain a tag for tracking the last modified property.
+     */
+}
+
+void twentySix()
+{
+    /* enumerations */
+
+    /**
+     * Behind the scenes, C treats enumeration variables and constants as integers.
+     * By default, the compiler assigns the integers 0, 1, 2 ... to the constants in a particular enumeration.
+     * 
+     */
+
+    enum
+    {
+        CLUBS,
+        DIAMONDS,
+        HEARTS,
+        SPADES
+    } s1,
+        s2;
+
+    enum suit
+    {
+        CLUBS,
+        DIAMONDS,
+        HEARTS,
+        SPADES
+    };
+
+    enum suit s3, s4;
+
+    typedef enum
+    {
+        CLUBS,
+        DIAMONDS,
+        HEARTS,
+        SPADES
+    } Suit;
+
+    Suit s5, s6;
 }
