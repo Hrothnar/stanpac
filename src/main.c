@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h> // give acess to C99 "key" words such as bool, true, false (which are wrappers by the nature)
 #include <ctype.h>x
 
@@ -14,7 +15,7 @@ typedef int Bool;
 // function declaration (or function prototype)
 void one(), two(), three(), four(), five(), six(), seven(), eight(), nine();
 void twelve(), thirteen(), fourteen(), sixteen(), seventeen(), eighteen(), nineteen();
-void twenty(), twentyOne(), twentyTwo(), twentyThree(), twentyFour(), twentyFive(), twentySix();
+void twenty(), twentyOne(), twentyTwo(), twentyThree(), twentyFour(), twentyFive(), twentySix(), twentySeven(), twentyEight();
 
 void decomposeV2(double, long *, double *);
 int *max(int *, int *);
@@ -23,6 +24,7 @@ void twoDimensionArrayLoop();
 char convertToHexChar(int);
 int readLine(char[], int);
 void f1(int), f2(int, int);
+char *concat(const char *, const char *);
 
 struct part
 {
@@ -51,7 +53,9 @@ int main()
     // twentyThree();
     // twentyFour();
     // twentyFive();
-    twentySix();
+    // twentySix();
+    // twentySeven();
+    twentyEight();
 
     return 0;
 }
@@ -1225,7 +1229,7 @@ void twentySix()
     /**
      * Behind the scenes, C treats enumeration variables and constants as integers.
      * By default, the compiler assigns the integers 0, 1, 2 ... to the constants in a particular enumeration.
-     * 
+     *
      */
 
     enum
@@ -1256,4 +1260,234 @@ void twentySix()
     } Suit;
 
     Suit s5, s6;
+}
+
+void twentySeven()
+{
+    /* dynamic storage allocation */
+
+    /**
+     * C's data structures are normally fixed in size. For example, the number of elements in an array is fixed once the program has been compiled.
+     * In C99, the length of a variable-length array is determined at run time, but it remains fixed for the rest of the array's lifetime.
+     * Fixed-size data structures can be a problem, since programmers are forced to choose their sizes when writing a program:
+     * programmers can't change the seizes without modifying the program and compiling it again.
+     *
+     * C supports dynamic storage allocation: the ability to allocate storage during program execution.
+     * Using dynamic storage allocation, people can design data structures that grow and shrink as needed.
+     *
+     * Although it's available for all types of data, dynamic storage allocation is used most often for strings, arrays and structures.
+     * Dynamically allocated structures are of particular interest, since we can link them together to frm lists, trees and other data structures.
+     */
+
+    /**
+     * malloc - allocates a block of memory but doesn't initialize it
+     * calloc - allocates a block of memory and clears it
+     * realloc - resizes a previously allocated block of memory
+     */
+
+    /**
+     * When a memory allocation function is called to request a block of memory, it does not know what type of data is planned to be stored in memory,
+     * so it can't return a pointer to an ordinary type such as int or char.
+     * Instead, the function returns a value of type void *. A void * value is a "generic" pointer - essentially, just a memory address.
+     */
+
+    /* null pointer */
+
+    /**
+     * When a memory allocation function is called, there's always a possibility that it won't be able to locate a block of memory large
+     * enough so satisfy the request.
+     * If that should happen, the function will return a null pointer. A null pointer is a "pointer to nothing" - a special value that can be
+     * distinguished from all valid pointers.
+     * After the function's return value has been stored in a pointer variable, it must be tested to sed if it's a null pointer.
+     */
+
+    void *p1;
+
+    p1 = malloc(10000);
+
+    if (p1 == NULL)
+    {
+        // allocation failed
+    }
+
+    // or shorter
+    if ((p1 = malloc(10000)) == NULL)
+    {
+        // allocation failed
+    }
+
+    /**
+     * In C, pointer tets true of false in the same way as numbers. All non-null pointers test true; only null pointers are false.
+     */
+
+    if (!p1)
+    {
+        // logic
+    }
+    if (p1)
+    {
+        // logic
+    }
+
+    /* dynamically allocated strings */
+
+    /**
+     * void *malloc(size_t size); // malloc prototype
+     * malloc returns the type size_t (unsigned integer), but unless a very large block of memory is allocated,
+     * programmers can thing of size as an ordinary integer
+     */
+
+    /**
+     * Using malloc to allocate memory for a string is easy, because C guarantees that a char value requires exactly one byte of storage.
+     */
+
+    int stringLength;
+
+    p1 = malloc(stringLength + 1); // +1 for the null terminator
+
+    /**
+     * The generic pointer that malloc returns will be converted to char* when the assignment is performed; no cast is necessary,
+     */
+
+    char *string;
+
+    string = malloc(stringLength + 1);
+    // but it could be casted explicitly
+    string = (char *)malloc(stringLength + 1);
+
+    /**
+     * Memory allocated using malloc isn't cleared or initialized in any way, so p1 will point ot an uninitialized array of stringLength + 1 characters
+     */
+
+    strcpy(string, "abc"); // one way to initialize an arrays
+
+    char *newString = concat("abc", "def");
+
+    /* dynamically allocated arrays */
+
+    int *a, length = 33;
+
+    /**
+     * It is important to always use sizeof() to allocate a proper amount of bytes, firstly because sized of fundamental data types can vary
+     */
+    a = malloc(length * sizeof(int));
+
+    /**
+     * Once it points to a dynamically allocated block of memory, the fact that a is a pointer can be ignored, a can be used as an array name instead.
+     * Pointer arithmetic also can be used to work with such a pointer
+     */
+
+    int i;
+    for (i = 0; i < length; i++)
+    {
+        a[i] = 0; // treat a as an array name
+    }
+
+    /* the calloc function */
+
+    /**
+     * Although the malloc function can be used to allocate memory for an array, C provides an alternative
+     * the calloc function - that's sometimes better.
+     *
+     * void *calloc(size_t nmemb, size_t size);
+     *
+     * calloc() allocates space for an array with nmemb elements, each of which is size bytes long.
+     * It returns a null pointer if the requested space isn't available.
+     * After allocating the memory, calloc initializes it by setting all bits to 0.
+     */
+
+    a = calloc(length, sizeof(int));
+
+    /**
+     * Since calloc() clears the memory that is allocates but malloc() doesn't, programmers may occasionally want to use calloc()
+     * to allocate space for an object other than an array.
+     * By calling calloc() with 1 as its firs argument, we can allocate space fo a data item of any type.
+     */
+
+    struct point
+    {
+        int x, y;
+    } *p;
+
+    p = calloc(1, sizeof(struct point));
+
+    /* the realloc function */
+
+    // void *realloc(void *ptr, size_t size);
+
+    /**
+     * When realloc() is called, ptr must point to a memory block obtained by a previous call of malloc, calloc or realloc.
+     * The size parameter represents the new size of the block, which may be larger or smaller than the original size.
+     *
+     * The C standard stops short of specifying exactly how realloc works.
+     * Still, we expect it to be reasonably efficient. When asked to reduce the size of a memory block, realloc should shrink the block "in place",
+     * without moving the data stored in the block.
+     * By the same token, realloc should always attempt to expand a memory block without moving it.
+     * If it's unable to enlarge the block realloc will allocate a new block elsewhere, then copy the contents of the old block int the new one.
+     *
+     * So, once realloc has returned, a programmer has to make sure that all pointers to the memory block are updated.
+     */
+
+    /* deallocating storage */
+
+    /**
+     * malloc and the other memory allocation functions obtain memory blocks from a storage pool known as the heap.
+     * Calling thse functions too often or asking them for large blocks of memory can exhaust the heap, causing the functions to return a null pointer.
+     *
+     * To make matters worse, a program may allocate blocks of memory and then lose track of them, thereby wasting space, like so;
+     */
+    void *one, *two, *three;
+
+    one = malloc(8);
+    two = malloc(8);
+    one = two; // the memory allocated for one has been lost and takes places for nothing
+
+    /**
+     * A block of memory that's no longer accessible to a program is said to be garbage.
+     * A program that leaves garbage behind has a memory leak.
+     * Some languages provide a garbage collector that automatically locates and recycles garbage, but C doesn't.
+     * Instead, each C program is responsible for recycling its own garbage by calling the free function to release unneeded memory.
+     */
+
+    /* the free function */
+    // void free(void *ptr);
+
+    /**
+     * free() releases the block of memory tat two points to. This block is now available
+     * for reuse in subsequent calls of malloc or other memory allocation functions.
+     */
+    free(two);
+    two = three;
+
+    /* the "dangling pointer" problem */
+
+    /**
+     * Attempting to access or modify a deallocated memory block causes undefined behaviour.
+     * Trying to modify a deallocated memory block is likely to have disastrous consequences that may include a program crash.
+     *
+     * Dangling pointers can be hard to spat, since several pointes may point ot the same block of memory.
+     * When the block is freed, all the pointes are left dangling.
+     */
+}
+
+char *concat(const char *string1, const char *string2)
+{
+    char *result;
+
+    result = malloc(strlen(string1) + strlen(string2) + 1);
+    if (result == NULL)
+    {
+        printf("Error: malloc failed in concat\n");
+        exit(EXIT_FAILURE);
+    }
+
+    strcpy(result, string1);
+    strcpy(result, string2);
+
+    return result;
+}
+
+void twentyEight()
+{
+    /* linked list */
 }
