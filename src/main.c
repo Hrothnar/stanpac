@@ -25,6 +25,10 @@ char convertToHexChar(int);
 int readLine(char[], int);
 void f1(int), f2(int, int);
 char *concat(const char *, const char *);
+struct node *addToList(struct node *, int);
+struct node *searchList(struct node *, int);
+struct node *searchListV2(struct node *, int);
+struct node *searchListV3(struct node *, int);
 
 struct part
 {
@@ -32,6 +36,12 @@ struct part
     char name[25];
     int onHand;
 }; // the semicolon must follow a struct declaration
+
+struct node
+{
+    int value;
+    struct node *next;
+};
 
 void printPart(part);
 struct part buildPart(int, const char *, int);
@@ -1490,4 +1500,109 @@ char *concat(const char *string1, const char *string2)
 void twentyEight()
 {
     /* linked list */
+
+    struct node *first = NULL;
+
+    struct node *newNode;
+    newNode = malloc(sizeof(struct node)); // newNode points to a block of memory just large enough to hold a node structure
+
+    (*newNode).value = 10;
+    /**
+     * the -> operator
+     * Accessing a member of a structure using a pointer is so common that C provides a special operator just for this purpose.
+     * This operator, known as right arrow selection.
+     *
+     * This operator is a combination of the * and . operators; it performs indirection on newNode
+     * to locate the structure that is points to, then selects the value member of the structure.
+     */
+
+    newNode->value = 10; // equals to (*newNode).value = 10;
+
+    newNode->next = first;
+    first = newNode;
+
+    first = addToList(first, 10);
+    first = addToList(first, 20);
+
+    first = searchList(first, 3);
+    first = searchListV2(first, 3);
+    first = searchListV3(first, 3);
+
+    
+
+}
+
+/**
+ * Note that it doesn't modify the list pointer. Instead, it returns a pointer to the newly created node (now at the beginning og the list).
+ * When this function is called its return value has to be stored into first.
+ */
+struct node *addToList(struct node *list, int n)
+{
+    struct node *newNode = malloc(sizeof(struct node));
+    if (newNode == NULL)
+    {
+        printf("Error: malloc failed in addToList\n");
+        exit(EXIT_FAILURE);
+    }
+
+    newNode->value = n;
+    newNode->next = list;
+
+    return newNode;
+}
+
+struct node *readNumbers(void)
+{
+    struct node *first = NULL;
+    int n;
+
+    printf("Enter a series of integers (0 to terminate): ");
+
+    for (;;)
+    {
+        scanf("%d", &n);
+
+        if (n == 0)
+        {
+            return first;
+        }
+
+        first = addToList(first, n);
+    }
+}
+
+struct node *searchList(struct node *list, int n)
+{
+    struct node *p;
+
+    for (p = list; p != NULL; p = p->next)
+    {
+        if (p->value == n)
+        {
+            return p;
+        }
+
+        return NULL;
+    }
+}
+
+struct node *searchListV2(struct node *list, int n)
+{
+    for (; list != NULL; list = list->next)
+    {
+
+        if (list->value == n)
+        {
+            return list;
+        }
+
+        return NULL;
+    }
+}
+
+struct node *searchListV3(struct node *list, int n)
+{
+    for (; list != NULL && list->value != n; list = list->next)
+        ;
+    return list;
 }
