@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h> // give acess to C99 "key" words such as bool, true, false (which are wrappers by the nature)
-#include <ctype.h>x
+#include <ctype.h>
+#include <math.h>
 
 // directive declaration
 #define INCHES_PER_POUND 166
@@ -15,7 +16,8 @@ typedef int Bool;
 // function declaration (or function prototype)
 void one(), two(), three(), four(), five(), six(), seven(), eight(), nine();
 void twelve(), thirteen(), fourteen(), sixteen(), seventeen(), eighteen(), nineteen();
-void twenty(), twentyOne(), twentyTwo(), twentyThree(), twentyFour(), twentyFive(), twentySix(), twentySeven(), twentyEight();
+void twenty(), twentyOne(), twentyTwo(), twentyThree(), twentyFour(), twentyFive(), twentySix(), twentySeven(), twentyEight(), twentyNine();
+void thirty();
 
 void decomposeV2(double, long *, double *);
 int *max(int *, int *);
@@ -29,6 +31,9 @@ struct node *addToList(struct node *, int);
 struct node *searchList(struct node *, int);
 struct node *searchListV2(struct node *, int);
 struct node *searchListV3(struct node *, int);
+struct node *deleteFromList(struct node *, int);
+void *addToList2(struct node **, int);
+double integrate(double (*f)(double), double, double); // double integrate(double f(double), double, double);
 
 struct part
 {
@@ -65,7 +70,9 @@ int main()
     // twentyFive();
     // twentySix();
     // twentySeven();
-    twentyEight();
+    // twentyEight();
+    // twentyNine();
+    thirty();
 
     return 0;
 }
@@ -1528,8 +1535,9 @@ void twentyEight()
     first = searchListV2(first, 3);
     first = searchListV3(first, 3);
 
-    
+    deleteFromList(first, 20);
 
+    addToList2(&first, 30);
 }
 
 /**
@@ -1549,6 +1557,20 @@ struct node *addToList(struct node *list, int n)
     newNode->next = list;
 
     return newNode;
+}
+
+void *addToList2(struct node **list, int n)
+{
+    struct node *newNode = malloc(sizeof(struct node));
+    if (newNode == NULL)
+    {
+        printf("Error: malloc failed in addToList\n");
+        exit(EXIT_FAILURE);
+    }
+
+    newNode->value = n;
+    newNode->next = list;
+    *list = newNode;
 }
 
 struct node *readNumbers(void)
@@ -1605,4 +1627,204 @@ struct node *searchListV3(struct node *list, int n)
     for (; list != NULL && list->value != n; list = list->next)
         ;
     return list;
+}
+
+struct node *deleteFromList(struct node *list, int n)
+{
+    struct node *current, *previous;
+
+    for (current = list, previous = NULL; current != NULL && current->value != n; previous = current, current = current->next)
+    {
+    }
+
+    if (current == NULL)
+    {
+        return list;
+    }
+
+    if (previous == NULL)
+    {
+        list = list->next;
+    }
+    else
+    {
+        previous->next = current->next;
+    }
+
+    free(current);
+
+    return list;
+}
+
+void twentyNine()
+{
+    /* pointer to a function */
+
+    double result = integrate(sin, 0.0, 3.13 / 2);
+    qsort((int[]){1, 2, 3}, 3, sizeof(int), compareParts);
+}
+
+double integrate(double (*f)(double), double a, double b)
+{
+    double result = (*f)(a);
+    return result;
+}
+
+int compareParts(const void *p, const void *q)
+{
+    const struct part *p1 = p;
+    const struct part *q1 = q;
+
+    if (p1->number < q1->number)
+    {
+        return -1;
+    }
+    else if (p1->number == q1->number)
+    {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+
+    // or simply
+    return ((struct part *)p)->number - ((struct part *)q)->number;
+}
+
+void thirty()
+{
+    /* Input and Output */
+    /* Streams */
+    /**
+     * In C, the term stream means any source of input or any destination fo output.
+     * Many small programs obtain their input from one stream (usually associated with the keyboard)
+     * and write all their output to another stream (usually associated with the screen)
+     * Larger programs may need additional streams. These streams often represent files stored on various media,
+     * but they could just as easily be associated with devices that don't store files: network ports, printers, etc.
+     */
+
+    /**
+     * Accessing a stream in a C program is done through a file pointer, which has type FILE * (<stdio.h>).
+     * Certain streams are represented by file pointers with standard names; we can declare additional file pointers as needed.
+     * For example, if a program needs two streams in addition to the standard ones, it might contain the following declaration:
+     *     FILE *fp1, *fp2;
+     *
+     * A program may declare any number of FILE * variables, although operations sytems
+     * usually limit the number of streams that can be open at one time.
+     */
+
+    /* Standard Streams and Redirection */
+    /**
+     * stdio.h provides three standard streams. These streams are ready to use - we don't declare them, and we don't open or close them.
+     *    stdin   standard input  keyboard
+     *    stdout  standard output screen
+     *    stderr  standard error  screen
+     *
+     * The functions that we've used - printf(), scanf(), putchar(), getchar(), puts() and gets()
+     * - obtain input from stdin and send output to stdout.
+     * By default, stdin represents the keyboard; stdout and stderr represent the screen.
+     * However, many operation systems allow these default meanings to be changed via a mechanism known as redirection.
+     *
+     * Typically, we can force a program to obtain its input from a file instead of from the keyboard by putting the the name
+     * of the file on the command line, preceded by the m < character:
+     *    demo <in.dat
+     *
+     * This technique, known as input redirection, essentially makes the stdin stream represent a file
+     * (in.dat, in this case) instead of the keyboard. The beauty of redirection is that the demo program doesn't realize that
+     * it's reading from in.date; as far as it knows, any data it obtains from stdin is being entered at the keyboard.
+     *
+     * Outup redirection is similar. Redirecting the stdout stream is usually done by putting a file name on the
+     * command line, preceded by the > character:
+     *    demo >out.data
+     *
+     * All data written to stdout will now go into the out.data file instead of appearing on the screen.
+     * Incidentally, we can combine output redirection with input redirection:
+     *    demo <in.dat >out.dat or  demo > out.dat < in.dat
+     *
+     * One problem with output redirection is that everything written to stdout is put into a file.
+     * If the program goes off the rails and begins writing error messages, we won't see them until we look at the file.
+     * This is where stderr comes in. By writing error messages to stderr instead of stdout, we can guarantee that those
+     * messages will apper on the screen even when stdout has been redirected.
+     */
+
+    /* Text Files versus Binary Files */
+    /**
+     * stdio.h supports two kinds of files: text and binary. THe bytes in a text file represent characters,
+     * making it possible for a human to examine the file or edit it.
+     * The source code for a C program is stored in a text file, for example.
+     *
+     * In a binary file, on the other hand, bytes don't necessarily represent characters; groups of bytes might represent
+     * other types of data, such as integers and floating-point numbers. An executable C program is stored in a binary file.
+     */
+
+    /* File Operations */
+    /**
+     * Simplicity is one of the attractions of input and output redirection; there's no need to open a file, close a file,
+     * or perform any other explicit file operations. Unfortunately, redirection is too limited for many applications.
+     * When a program relies on redirection, it has no control over its files; it doesn't even know their names.
+     * Worse still, redirection doesn't help if the program needs to read from two files or write to two files at the same time.
+     * When redirection isn't enough, we'll end up using the file operations that stdio.h provides.
+     */
+
+    FILE *fp = fopen("in.dat", "r"); // fp - file pointer for future operations on the file
+
+    /**
+     * Modes
+     *
+     * r - open for reading
+     * w - open for writing
+     * a - open for appending
+     * r+ - open for reading and writing, starting at beginning
+     * w+ - open for reading and writing (truncate if file exists)
+     * a+ - open for reading and writing (append if file exists)
+     *
+     * For reading binary files the letter b must preced chosen mode.
+     */
+
+    fclose(fp); // closes stream
+
+    /**
+     * freopen() attaches a different file to a stream that's already open.
+     * The most common use of freopen() is to associate a file with one of the standard streams.
+     * To cause a program to begin writing to the file foo, for instance, we could use the following call of freopen():
+     */
+
+    if (freopen("foo", "w", stdout) == NULL)
+    {
+        // error, foo can't be opened
+    }
+
+    /* Temporary Files */
+
+    FILE *tmp = tmpfile();         // created a temporary file in wb+ mode
+    char *fileName = tmpnam(NULL); // creates a temporary file name
+
+    /* File Buffering */
+    /**
+     * Transferring data to or from a disk drive is a relatively slow operation. As a result, it isn't feasible for a program
+     * to access a disk file directly each time it wants to read or write a byte.
+     * The secret to achieving acceptable performance is buffering.
+     *
+     * Data written to a stream is actually stored in a buffer area in memory: when it's full (or stream is closed),
+     * the buffer is "flushed" (written to the actual output device). Of course, it takes time to transfer the buffer
+     * contents to or from disk, but one large "block move" is much faster than many tiny byte moves.
+     *
+     * The functions in stdio.h perform buffering automatically when it seems advantageous.
+     */
+
+    fflush(fp);   // flushes buffer for fp
+    fflush(NULL); // flushes all buffers
+
+    /**
+     * setvbuf() must be called after stream is opened but before any other operations are performed on it.
+     * It's also legal to call the function with a null pointer as the second argument, which requests that
+     * setvbuf() create a buffer with the specifies size.
+     *
+     * It's importand that a stream is closed before buffer has been deallocated.
+     */
+    setvbuf(fp, (char){22}, _IOFBF, 22); // allows to configure buffer
+
+    remove(fileName); // removes a file
+    rename(fileName, (char){"cool new name"}); // renames a file
 }
