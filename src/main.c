@@ -34,6 +34,7 @@ struct node *searchListV3(struct node *, int);
 struct node *deleteFromList(struct node *, int);
 void *addToList2(struct node **, int);
 double integrate(double (*f)(double), double, double); // double integrate(double f(double), double, double);
+int findInt(const char *);
 
 struct part
 {
@@ -1825,6 +1826,140 @@ void thirty()
      */
     setvbuf(fp, (char){22}, _IOFBF, 22); // allows to configure buffer
 
-    remove(fileName); // removes a file
+    remove(fileName);                          // removes a file
     rename(fileName, (char){"cool new name"}); // renames a file
+
+    /* Formatted I/O */
+    /**
+     * Formatted functions have the ability to convert data from character form to numeric form during input
+     * and from numeric form to character form during output. None of the other I/O functions can do such conversions.
+     */
+
+    printf("Total: %d\n", 11);          // writes to stdout
+    fprintf(stdout, "Total: %d\n", 11); // writes to stdout, but the stream can be chosen for this function
+
+    /**
+     * As always, the stream could be anything of the FILE type - any stream, not only a file on disk
+     */
+
+    int i, j;
+    scanf("%d%d", &i, &j);         // reads from stdin
+    fscanf(stdin, "%d%d", &i, &j); // reads from stdin, but the stream can be chosen for this function
+
+    /* Character I/O */
+
+    putchar('s');       // writes one character to the stdout stream
+    fputc('s', stdout); // writes one character to an arbitrary stream
+
+    getchar(); // reads a character from stdin
+    fgetc(fp); // reads a character from an arbitrary stream
+    getc(fp);  // reads a character from an arbitrary stream
+
+    puts("Hello there!");      // writes to stdout, adds a new-line character at the end
+    fputs("Hello there!", fp); // can write to an arbitrary stream, does not add a new line character
+
+    char str[100];
+
+    gets(str);                   // reads a line form stdin
+    fgets(str, sizeof(str), fp); // can read from an arbitrary stream
+
+    /* Block I/O */
+    /**
+     * The fread() and fwrite() functions allow a program to read and write large blocks of data in a single step.
+     *
+     * fwrite() is designed to copy and array from memory to a stream.
+     */
+    fwrite(str, sizeof(str[0]), sizeof(str) / sizeof(str[0]), fp);
+    fread(str, sizeof(str[0]), sizeof(str) / sizeof(str[0]), fp);
+
+    /* File Positioning */
+    /**
+     * Every stream has an associated file position. When a file is opened, the file position is set at the beginning of the file.
+     * If the file is opened in "append" mode, however, the initial file position may be at the beginning or end of the file,
+     * depending on the implementation. Then, wheen a read or write operation is performed, the file position advances
+     * automatically, allowing us to move through the file in a sequential manner.
+     *
+     * Although sequential access is fine for many applications, some programs need the ability to jump around within a file,
+     * accessing some data here and other data there. If a file contains a series of records, for example, we might want to jump
+     * directly to a particular record and read it or update it. stdio.h supports this form of access by providing five functions
+     * that allow a program to determine the current file position or to change it.
+     */
+
+    fseek(fp, 0L, SEEK_SET);   // moves to beginning of file
+    fseek(fp, 0L, SEEK_END);   // moves to end of file
+    fseek(fp, -10L, SEEK_CUR); // moves back 10 bytes
+
+    ftell(fp); // returns current position of a stream
+
+    fpos_t filePos;
+
+    fgetpos(fp, &filePos); // saves current position
+    fsetpos(fp, &filePos); // returns to old position
+
+    /* String I/O */
+    /**
+     * The functions described in this section are a bit unusual, since they have nothing to do with streams of files.
+     * Instead, they allow us to read and write data using a string as though it were a stream.
+     * The sprintf() and snprintf() functions write characters into a string in the same way they would be written to a stream;
+     * the sscanf() reads characters from a string as though it were reading from a stream.
+     * These functions, which closely resemble printf() and scanf(), are quite useful.
+     * sprintf() and snprintf() give us access to printf's formatting capabilities without actually having to write data to a stream.
+     * Similarly, sscanf() fives us access to scanf's powerful pattern-matching capabilities.
+     */
+
+    char date[128];
+
+    sprintf(date, "%d%d%d", 9, 20, 2010); // writes output into a character array
+
+    /**
+     * sprintf() has a variety of uses. For example, we might occasionally want to format data for output without
+     * actually writing it. We can use sprintf() to do the formatting, then save the result in a string until it's time to produce output.
+     * Also, it's convenient for converting numbers to character form.
+     */
+
+    /**
+     * The sscanf() function is similar to scanf() and fscanf(), except that it reads from a string
+     * (pointed to by its first argument) instead of reading from a stream.
+     * sscanf() is handy for extracting data from a string that was read by another input function.
+     * For example, we might use fgets() to obtain a line of input, then pass the line to sscanf for further processing.
+     */
+
+    fgets(str, sizeof(str), stdin); // reads a line of input
+    sscanf(str, "%d%d", &i, &j);    // extracts two integers
+
+    /**
+     * One advantage of using sscanf() instead of scanf() or fscanf() is that we can examine an input line as many
+     * times as needed, no just once, making it easier to recognize alternate input forms and to recover from errors.
+     */
+}
+
+int findInt(const char *fileName)
+{
+    FILE *fp = fopen(fileName, "r");
+    int n;
+
+    if (fp == NULL)
+    {
+        return -1; // can't open the file
+    }
+
+    while (fscanf(fp, "%d", &n) != 1)
+    {
+        if (ferror(fp))
+        {
+            fclose(fp);
+            return -2; // read error
+        }
+
+        if (feof(fp))
+        {
+            fclose(fp);
+            return -3; // integer not found
+        }
+
+        fscanf(fp, "%*[^\n]"); // skips rest of line
+    }
+
+    fclose(fp);
+    return n;
 }
